@@ -14,4 +14,7 @@ class TelegramIncomingMessageAdapter(IncomingMessageAdapter):
             raise
         user_id = str(raw_message.from_user.id)
         text = raw_message.text if raw_message.text is not None else ""
-        return Message(str(raw_message.message_id), user_id, str(raw_message.chat.id), text, dt)
+        clean_message = Message(str(raw_message.message_id), user_id, str(
+            raw_message.chat.id), text, dt)
+
+        return clean_message
