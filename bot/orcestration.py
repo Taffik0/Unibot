@@ -42,7 +42,7 @@ async def main():
 
     print("build handler orchestrator")
     handler_orchestrator = HandlerOrchestrator(
-        max_tasks=50, handler_builder=HandlerBuilder(), response_processor=response_processor)
+        handler_builder=HandlerBuilder(), response_processor=response_processor)
 
     print("build handler state register")
     handler_state_register = HandlerStateRegister()
@@ -66,11 +66,12 @@ async def main():
                                           incoming_command_adapter=TelegramIncomingCommandAdapter([MyCommand]), command_router=command_rout)
 
     print("start handler orchestrator")
-    await handler_orchestrator.start()
+    await message_rout.start()
     print("start tg listener")
     await tg_listener.start()
-    print("bot started")
+    print("start command rout")
     await command_rout.start()
+    print("bot started")
 
     try:
         while True:
@@ -79,7 +80,8 @@ async def main():
         print("stopping bot...")
 
         await tg_listener.stop()
-        await handler_orchestrator.stop()
+        await message_rout.stop()
+        await command_rout.stop()
 
         print("bot stopped")
 

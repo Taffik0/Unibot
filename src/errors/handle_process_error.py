@@ -1,0 +1,2 @@
+class HandleProcessError(Exception):
+    pass

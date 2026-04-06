@@ -32,11 +32,11 @@ class HandlerStateRegister:
                 f"For {state} already have registered handler.")
         self.global_layer[state] = factory
 
-    async def get(self, state: States) -> HandlerFactory:
-        return self.base_layer[state]
+    async def get(self, state: States) -> HandlerFactory | None:
+        return self.base_layer.get(state)
 
-    async def get_dedicated(self, state: States) -> HandlerFactory:
-        return self.dedicated_layer[state]
+    async def get_dedicated(self, state: States) -> HandlerFactory | None:
+        return self.dedicated_layer.get(state)
 
-    async def get_global(self, state: States) -> HandlerFactory:
-        return self.global_layer[state]
+    async def get_global(self, state: States) -> HandlerFactory | None:
+        return self.global_layer.get(state)
