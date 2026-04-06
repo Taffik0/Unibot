@@ -1,0 +1,2 @@
+class HandleBuildError(Exception):
+    pass

@@ -1,0 +1,2 @@
+class StateHandlerConflictError(Exception):
+    pass
