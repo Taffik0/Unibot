@@ -6,5 +6,5 @@ from src.commands.command import Command
 
 class IncomingCommandAdapter(ABC):
     @abstractmethod
-    def adapt_command(self, raw_command) -> Command:
+    def adapt_command(self, raw_command) -> Command | None:
         pass

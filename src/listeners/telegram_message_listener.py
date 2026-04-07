@@ -15,7 +15,7 @@ from src.rout.commands.command_router import CommandRouter
 
 class AnyCommand(BaseFilter):
     async def __call__(self, message: TgMessage) -> bool:
-        return message.text and message.text.startswith("/")
+        return bool(message.text and message.text.startswith("/"))
 
 
 class TelegramMessageListener(MessageListener):
@@ -52,7 +52,6 @@ class TelegramMessageListener(MessageListener):
 
     async def _listening_message(self, message: TgMessage):
         clear_message = self.incoming_message_adapter.adapt_message(message)
-        print(clear_message)
         await self.message_router.rout(clear_message)
 
     async def _listening_commands(self, message: TgMessage):
@@ -71,5 +70,6 @@ class TelegramMessageListener(MessageListener):
 
         clear_command = self.incoming_command_adapter.adapt_command(
             (command, message))
-        print(clear_command)
+        if clear_command is None:
+            return
         await self.command_router.rout(clear_command)

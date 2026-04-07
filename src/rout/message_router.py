@@ -1,6 +1,8 @@
 import asyncio
 from asyncio import Queue
 
+from src.rout.concurrency_limiter import ConcurrencyLimiter
+
 from src.rout.handler_state_register import HandlerStateRegister
 from src.rout.handler_orchestrator import HandlerOrchestrator
 from src.state.conversation_state_repository import ConversationStateRepository
@@ -14,15 +16,13 @@ from src.errors.handle_process_error import HandleProcessError
 class MessageRouter:
     def __init__(self, handler_state_register: HandlerStateRegister,
                  handler_orchestrator: HandlerOrchestrator,
-                 conversation_state_repository: ConversationStateRepository, max_tasks=50):
+                 conversation_state_repository: ConversationStateRepository, concurrency_limiter: ConcurrencyLimiter):
         self.handler_state_register = handler_state_register
         self.handler_orchestrator = handler_orchestrator
         self.conversation_state_repository = conversation_state_repository
 
-        self.max_tasks = max_tasks
-
         self.tasks_queue: Queue[Message] = Queue()
-        self.semaphore = asyncio.Semaphore(max_tasks)
+        self.semaphore = concurrency_limiter.semaphore
 
         self._is_working = True
         self.async_worker_task = None

@@ -2,6 +2,8 @@ import asyncio
 
 from aiogram import Bot
 
+from src.rout.concurrency_limiter import ConcurrencyLimiter
+
 from src.listeners.telegram_message_listener import TelegramMessageListener
 from src.senders.telegram_sender import TelegramSender
 from src.message_adapters.incoming.telegram_incoming_message_adapter import TelegramIncomingMessageAdapter
@@ -15,6 +17,8 @@ from src.rout.commands.command_router import CommandRouter
 from src.rout.commands.command_handler_orchestrator import CommandHandlerOrchestration
 from src.rout.commands.handler_command_register import HandlerCommandRegister
 from src.handler.command_handler_builder import CommandHandlerBuilder
+
+from src.tools.bot_tools import BotTools
 
 from src.handler.handler_builder import HandlerBuilder
 
@@ -33,6 +37,9 @@ async def main():
     print("create tg bot")
     bot = Bot(token=API_TOKEN)
 
+    print("bot building...")
+    concurrency_limiter = ConcurrencyLimiter(max_tasks=50)
+
     print("build conversation state repository")
     conversation_state_repository = ConversationStateRepository(MyStates.START)
 
@@ -40,9 +47,11 @@ async def main():
     response_processor = ResponseProcessor(
         TelegramSender(bot), conversation_state_repository)
 
+    bot_tools = BotTools(response_processor)
+
     print("build handler orchestrator")
     handler_orchestrator = HandlerOrchestrator(
-        handler_builder=HandlerBuilder(), response_processor=response_processor)
+        handler_builder=HandlerBuilder(bot_tools), response_processor=response_processor)
 
     print("build handler state register")
     handler_state_register = HandlerStateRegister()
@@ -51,20 +60,23 @@ async def main():
 
     print("build message rout")
     message_rout = MessageRouter(handler_state_register=handler_state_register,
-                                 handler_orchestrator=handler_orchestrator, conversation_state_repository=conversation_state_repository)
+                                 handler_orchestrator=handler_orchestrator,
+                                 conversation_state_repository=conversation_state_repository,
+                                 concurrency_limiter=concurrency_limiter)
 
     handler_command_register = HandlerCommandRegister()
 
     await handler_command_register.register(MyCommand.START, build_start_handler)
 
-    command_rout = CommandRouter(50, CommandHandlerOrchestration(
-        CommandHandlerBuilder(), response_processor), handler_command_register)
+    command_rout = CommandRouter(concurrency_limiter, CommandHandlerOrchestration(
+        CommandHandlerBuilder(bot_tools), response_processor), handler_command_register)
 
     print("build tg listener")
     tg_listener = TelegramMessageListener(bot=bot,
                                           message_router=message_rout, incoming_message_adapter=TelegramIncomingMessageAdapter(),
                                           incoming_command_adapter=TelegramIncomingCommandAdapter([MyCommand]), command_router=command_rout)
 
+    print("bot starting...")
     print("start handler orchestrator")
     await message_rout.start()
     print("start tg listener")

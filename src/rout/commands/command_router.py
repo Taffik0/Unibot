@@ -1,6 +1,8 @@
 import asyncio
 from asyncio import Queue
 
+from src.rout.concurrency_limiter import ConcurrencyLimiter
+
 from src.types.command_handler_factory import CommandHandlerFactory
 from src.handler.command_handler import CommandHandler
 from src.commands.command import Command
@@ -10,15 +12,14 @@ from src.rout.commands.command_handler_orchestrator import CommandHandlerOrchest
 
 
 class CommandRouter:
-    def __init__(self, max_tasks: int,
+    def __init__(self, concurrency_limiter: ConcurrencyLimiter,
                  command_handler_orchestrator: CommandHandlerOrchestration,
                  handler_command_register: HandlerCommandRegister) -> None:
-        self.max_tasks = max_tasks
         self.command_handler_orch = command_handler_orchestrator
         self.handler_command_register = handler_command_register
 
         self.tasks_queue: Queue[Command] = Queue()
-        self.semaphore = asyncio.Semaphore(max_tasks)
+        self.semaphore = concurrency_limiter.semaphore
 
         self._is_working = True
         self.async_worker_task = None

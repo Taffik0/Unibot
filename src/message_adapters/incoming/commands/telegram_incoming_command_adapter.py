@@ -8,18 +8,18 @@ from src.commands.commands import Commands
 
 
 class TelegramIncomingCommandAdapter(IncomingCommandAdapter):
-    def __init__(self, commands_enums: Commands) -> None:
+    def __init__(self, commands_enums: list[Commands]) -> None:
         self.commands_enums = commands_enums
 
-    def _validate_command_type(self, command: str) -> Commands:
+    def _validate_command_type(self, command: str) -> Commands | None:
         for ce in self.commands_enums:
             try:
                 return ce(command)
-            except:
-                pass
-        raise
+            except Exception as e:
+                print(f"can validate command {e}")
+        return None
 
-    def adapt_command(self, raw_command: tuple[CommandObject, TgMessage]) -> Command:
+    def adapt_command(self, raw_command: tuple[CommandObject, TgMessage]) -> Command | None:
         command_data, message_data = raw_command
         message_id = str(message_data.message_id)
         if message_data.from_user is None:
@@ -27,8 +27,8 @@ class TelegramIncomingCommandAdapter(IncomingCommandAdapter):
         user_id = str(message_data.from_user.id)
         chat_id = str(message_data.chat.id)
         command_type = self._validate_command_type(command_data.command)
-        # Доделать
-        pass
+        if command_type is None:
+            return None
         return Command(message_id=message_id,
                        chat_id=chat_id,
                        user_id=user_id,
