@@ -1,15 +1,15 @@
 import asyncio
 from asyncio import Queue
 
-from src.handler.handler import Handler
-from src.handler.handler_builder import HandlerBuilder
-from src.message.message import Message
-from src.types.handler_factory import HandlerFactory
-from src.response.response_processor import ResponseProcessor
-from src.response.response_container import ResponseContainer
+from unibot.handler.handler import Handler
+from unibot.handler.handler_builder import HandlerBuilder
+from unibot.message.message import Message
+from unibot.types.handler_factory import HandlerFactory
+from unibot.response.response_processor import ResponseProcessor
+from unibot.response.response_container import ResponseContainer
 
-from src.errors.handle_build_error import HandleBuildError
-from src.errors.handle_process_error import HandleProcessError
+from unibot.errors.handle_build_error import HandleBuildError
+from unibot.errors.handle_process_error import HandleProcessError
 
 
 class HandlerOrchestrator:

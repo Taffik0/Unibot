@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.commands.commands import Commands
+from unibot.commands.commands import Commands
 
 
 @dataclass

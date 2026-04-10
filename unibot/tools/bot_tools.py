@@ -1,5 +1,5 @@
-from src.response.response_processor import ResponseProcessor
-from src.response.response_container import ResponseContainer
+from unibot.response.response_processor import ResponseProcessor
+from unibot.response.response_container import ResponseContainer
 
 
 class BotTools:

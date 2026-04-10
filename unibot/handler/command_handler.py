@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
-from src.commands.command import Command
-from src.response.response_container import ResponseContainer
+from unibot.commands.command import Command
+from unibot.response.response_container import ResponseContainer
 
 
 class CommandHandler(ABC):

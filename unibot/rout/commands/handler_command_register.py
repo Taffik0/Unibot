@@ -1,6 +1,6 @@
-from src.commands.commands import Commands
-from src.handler.command_handler_builder import CommandHandler
-from src.types.command_handler_factory import CommandHandlerFactory
+from unibot.commands.commands import Commands
+from unibot.handler.command_handler_builder import CommandHandler
+from unibot.types.command_handler_factory import CommandHandlerFactory
 
 
 class HandlerCommandRegister:

@@ -1,14 +1,16 @@
 import asyncio
 from asyncio import Queue
 
-from src.rout.concurrency_limiter import ConcurrencyLimiter
+from unibot.rout.concurrency_limiter import ConcurrencyLimiter
 
-from src.types.command_handler_factory import CommandHandlerFactory
-from src.handler.command_handler import CommandHandler
-from src.commands.command import Command
-from src.rout.commands.handler_command_register import HandlerCommandRegister
+from unibot.types.command_handler_factory import CommandHandlerFactory
+from unibot.handler.command_handler import CommandHandler
+from unibot.commands.command import Command
+from unibot.rout.commands.handler_command_register import HandlerCommandRegister
 
-from src.rout.commands.command_handler_orchestrator import CommandHandlerOrchestration
+from unibot.rout.commands.command_handler_orchestrator import CommandHandlerOrchestration
+
+from unibot.logger.logger import logger
 
 
 class CommandRouter:
@@ -46,3 +48,5 @@ class CommandRouter:
         if handler_factory is None:
             raise
         await self.command_handler_orch.process(handler_factory, command)
+        logger().info(
+            f"Successfully handle command {command.command.name} id:{command.message_id} in chat:{command.chat_id} from user:{command.user_id}")

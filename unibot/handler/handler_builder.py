@@ -2,13 +2,13 @@ from typing import Any, AsyncGenerator
 from dataclasses import dataclass
 import inspect
 
-from src.types.handler_factory import HandlerFactory
+from unibot.types.handler_factory import HandlerFactory
 
-from src.errors.handle_build_error import HandleBuildError
+from unibot.errors.handle_build_error import HandleBuildError
 
-from src.handler.handler import Handler
+from unibot.handler.handler import Handler
 
-from src.tools.bot_tools import BotTools
+from unibot.tools.bot_tools import BotTools
 
 
 @dataclass

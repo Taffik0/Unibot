@@ -1,5 +1,5 @@
 from typing import Union, Callable, Awaitable, AsyncGenerator
-from src.handler.handler import Handler
+from unibot.handler.handler import Handler
 
 
 HandlerFactory = Union[

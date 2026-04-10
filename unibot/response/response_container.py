@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from src.response.response import Response
-from src.state.state import States
-from src.response.response_message import ResponseMessage
+from unibot.response.response import Response
+from unibot.state.state import States
+from unibot.response.response_message import ResponseMessage
 
 
 @dataclass

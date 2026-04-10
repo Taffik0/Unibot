@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.message.message import Message
+from unibot.message.message import Message
 
 
 class IncomingMessageAdapter(ABC):

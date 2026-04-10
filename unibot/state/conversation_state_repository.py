@@ -1,4 +1,4 @@
-from src.state.state import States
+from unibot.state.state import States
 
 
 class ConversationStateRepository:

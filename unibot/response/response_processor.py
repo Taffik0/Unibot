@@ -1,7 +1,7 @@
-from src.senders.sender import Sender
-from src.state.conversation_state_repository import ConversationStateRepository
+from unibot.senders.sender import Sender
+from unibot.state.conversation_state_repository import ConversationStateRepository
 
-from src.response.response_container import ResponseContainer
+from unibot.response.response_container import ResponseContainer
 
 
 class ResponseProcessor:

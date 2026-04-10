@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from src.message_adapters.incoming.incoming_message_adapter import IncomingMessageAdapter
+from unibot.message_adapters.incoming.incoming_message_adapter import IncomingMessageAdapter
 
 from aiogram.types import Message as TgMessage
-from src.message.message import Message
+from unibot.message.message import Message
 
 
 class TelegramIncomingMessageAdapter(IncomingMessageAdapter):

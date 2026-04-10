@@ -1,4 +1,4 @@
-from src.response.response_container import ResponseContainer
+from unibot.response.response_container import ResponseContainer
 
 from abc import ABC, abstractmethod
 

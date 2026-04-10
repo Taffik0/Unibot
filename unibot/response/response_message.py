@@ -1,5 +1,5 @@
-from src.commands.command import Command
-from src.message.message import Message
+from unibot.commands.command import Command
+from unibot.message.message import Message
 
 
 class ResponseMessage:

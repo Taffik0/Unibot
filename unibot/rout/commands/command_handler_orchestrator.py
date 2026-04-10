@@ -1,12 +1,12 @@
-from src.errors.handle_build_error import HandleBuildError
-from src.handler.command_handler_builder import CommandHandlerBuilder
-from src.handler.command_handler import CommandHandler
-from src.types.command_handler_factory import CommandHandlerFactory
-from src.commands.command import Command
+from unibot.errors.handle_build_error import HandleBuildError
+from unibot.handler.command_handler_builder import CommandHandlerBuilder
+from unibot.handler.command_handler import CommandHandler
+from unibot.types.command_handler_factory import CommandHandlerFactory
+from unibot.commands.command import Command
 
-from src.response.response_processor import ResponseProcessor
+from unibot.response.response_processor import ResponseProcessor
 
-from src.errors.handle_process_error import HandleProcessError
+from unibot.errors.handle_process_error import HandleProcessError
 
 
 class CommandHandlerOrchestration:

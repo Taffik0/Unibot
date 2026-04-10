@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
-from src.message.message import Message
+from unibot.message.message import Message
 
 
 class OutgoingMessageAdapter(ABC):

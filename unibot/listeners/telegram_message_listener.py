@@ -4,13 +4,13 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.filters import BaseFilter, Command as TgCommand, CommandObject
 from aiogram.types import Message as TgMessage
 
-from src.listeners.message_listener import MessageListener
+from unibot.listeners.message_listener import MessageListener
 
-from src.message_adapters.incoming.telegram_incoming_message_adapter import TelegramIncomingMessageAdapter
-from src.message_adapters.incoming.commands.telegram_incoming_command_adapter import TelegramIncomingCommandAdapter
+from unibot.message_adapters.incoming.telegram_incoming_message_adapter import TelegramIncomingMessageAdapter
+from unibot.message_adapters.incoming.commands.telegram_incoming_command_adapter import TelegramIncomingCommandAdapter
 
-from src.rout.message_router import MessageRouter
-from src.rout.commands.command_router import CommandRouter
+from unibot.rout.message_router import MessageRouter
+from unibot.rout.commands.command_router import CommandRouter
 
 
 class AnyCommand(BaseFilter):
@@ -67,7 +67,6 @@ class TelegramMessageListener(MessageListener):
 
         command = CommandObject(command=command_name,
                                 args=args, mention=mention)
-
         clear_command = self.incoming_command_adapter.adapt_command(
             (command, message))
         if clear_command is None:

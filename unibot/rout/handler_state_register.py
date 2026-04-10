@@ -1,11 +1,11 @@
 from typing import Union, Callable, Awaitable, AsyncGenerator
 
-from src.errors.handle_state_register_exceptions import StateHandlerConflictError
+from unibot.errors.handle_state_register_exceptions import StateHandlerConflictError
 
-from src.state.state import States
-from src.handler.handler import Handler
+from unibot.state.state import States
+from unibot.handler.handler import Handler
 
-from src.types.handler_factory import HandlerFactory
+from unibot.types.handler_factory import HandlerFactory
 
 
 class HandlerStateRegister:

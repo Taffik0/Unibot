@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 
-from src.message.specific_data import SpecificData
+from unibot.message.specific_data import SpecificData
 
 
 @dataclass

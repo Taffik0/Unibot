@@ -1,6 +1,6 @@
-from src.senders.sender import Sender
-from src.response.response_container import ResponseContainer
-from src.response.response import Response, TextResponse
+from unibot.senders.sender import Sender
+from unibot.response.response_container import ResponseContainer
+from unibot.response.response import Response, TextResponse
 
 from aiogram import Bot, Dispatcher, types
 

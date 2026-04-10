@@ -1,7 +1,9 @@
 import os
 
 from abc import ABC, abstractmethod
-from typing import Any, Callable, TypeVar
+from typing import Any, Callable, TypeVar, Generic
+
+T = TypeVar('T')
 
 
 class ABCSetting(ABC):
@@ -10,11 +12,11 @@ class ABCSetting(ABC):
         pass
 
 
-class Setting(ABCSetting):
-    def __init__(self, val: Any):
+class Setting(ABCSetting, Generic[T]):
+    def __init__(self, val: T):
         self.val = val
 
-    def value(self) -> Any:
+    def value(self) -> T:
         return self.val
 
 
@@ -26,12 +28,12 @@ class TextSetting(ABCSetting):
         return self.val
 
 
-T = TypeVar("T")
+A = TypeVar("A")
 R = TypeVar("R")
 
 
 class ChangeSetting(ABCSetting):
-    def __init__(self, val: Any | ABCSetting, func: Callable[[T], R]):
+    def __init__(self, val: Any | ABCSetting, func: Callable[[A], R]):
         self.val = val
         self.func = func
 
