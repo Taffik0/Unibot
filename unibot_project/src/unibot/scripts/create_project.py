@@ -37,14 +37,12 @@ def create_src_structure(project_path: Path):
     message_handlers_path = handlers_path / "message"
     command_handlers_path = handlers_path / "command"
 
-    states_path = src_path / "states"
-    commands_path = src_path / "commands"
-
     handlers_path.mkdir(parents=True, exist_ok=True)
     message_handlers_path.mkdir(parents=True, exist_ok=True)
     command_handlers_path.mkdir(parents=True, exist_ok=True)
-    states_path.mkdir(parents=True, exist_ok=True)
-    commands_path.mkdir(parents=True, exist_ok=True)
+
+    open(src_path / "states.py", "a").close()
+    open(src_path / "commands.py", "a").close()
 
 
 def copy_run_scripts(project_path: Path):

@@ -3,6 +3,6 @@ from unibot.handler.handler import Handler
 
 
 HandlerFactory = Union[
-    Callable[[], Awaitable[Handler]],
-    Callable[[], AsyncGenerator[Handler, None]]
+    Callable[..., Awaitable[Handler]],
+    Callable[..., AsyncGenerator[Handler, None]]
 ]

@@ -3,6 +3,6 @@ from unibot.handler.command_handler import CommandHandler
 
 
 CommandHandlerFactory = Union[
-    Callable[[], Awaitable[CommandHandler]],
-    Callable[[], AsyncGenerator[CommandHandler, None]]
+    Callable[..., Awaitable[CommandHandler]],
+    Callable[..., AsyncGenerator[CommandHandler, None]]
 ]
