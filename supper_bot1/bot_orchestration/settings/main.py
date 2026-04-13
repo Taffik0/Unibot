@@ -7,6 +7,8 @@ from unibot.types.handler_layers import Layers
 from unibot.state.state import States
 
 # Your code import
+from src.handlers.message.echo_handler import gen_echo_handler
+from src.states import MyStates
 
 
 OPERATING_MOD = EmptySetting("OPERATING_MOD not specified (in main settings)")
@@ -21,8 +23,7 @@ COMMANDS = Setting[list[Commands]]([
 ])
 
 MESSAGE_HANDLERS = Setting[dict[tuple[Layers, States], HandlerFactory]]({
-    # example
-    # (Layers.BASE, MyStates.START): build_echo_handler
+    (Layers.BASE, MyStates.START): gen_echo_handler,
 })
 
 COMMAND_HANDLERS = Setting[dict[Commands, CommandHandlerFactory]]({

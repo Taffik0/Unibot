@@ -9,7 +9,7 @@ from unibot.state.state import States
 # Your code import
 
 
-OPERATING_MOD = EmptySetting("OPERATING_MOD not specified (in main settings)")
+OPERATING_MODE = EmptySetting("OPERATING_MOD not specified (in main settings)")
 
 MAX_TASKS: Setting[int] = Setting(50)
 
