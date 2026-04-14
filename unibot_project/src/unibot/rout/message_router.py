@@ -58,11 +58,12 @@ class MessageRouter:
 
     async def _worker_loop(self):
         while self._is_working:
-            message = await self.tasks_queue.get()
-            try:
-                await self._process(message)
-            finally:
-                self.tasks_queue.task_done()
+            async with self.semaphore:
+                message = await self.tasks_queue.get()
+                try:
+                    await self._process(message)
+                finally:
+                    self.tasks_queue.task_done()
 
     async def _process(self, message: Message):
         state = await self.conversation_state_repository.get_state(message.user_id)
