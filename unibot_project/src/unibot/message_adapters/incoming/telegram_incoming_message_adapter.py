@@ -28,7 +28,7 @@ class TelegramIncomingMessageAdapter(IncomingMessageAdapter):
         first_name = raw_message.from_user.first_name
         surname = raw_message.from_user.last_name if raw_message.from_user.last_name else ""
         sd = FullNameSD(first_name, surname, "")
-        message.specific_data.append(sd)
+        message.add_sd(sd)
 
     async def add_picture(self, message: Message, raw_message: TgMessage, bot: Bot):
         pictures: list[Picture] = []
@@ -41,7 +41,7 @@ class TelegramIncomingMessageAdapter(IncomingMessageAdapter):
             if file_path is not None:
                 pictures.append(Picture(photo.width, photo.height,
                                 self._gen_download_file(file_path, bot)))
-        message.specific_data.append(PictureSD(pictures))
+        message.add_sd(PictureSD(pictures))
 
     @staticmethod
     def _gen_download_file(file_path: str, bot: Bot):
