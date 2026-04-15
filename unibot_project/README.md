@@ -50,15 +50,14 @@ my_project
 
 ### Layers
 
-существуют 3 слоя:
+существуют 2 слоя:
 
 1. Global - ограничения, валидация, cancel
-2. Dedicated - фичи для особых случаев
-3. Base - основной обработчик
+2. Base - основной обработчик
 
 Важно: На одном слое может быть только один обработчик на состояние.
-Во время обработки сообщения обработчики вызываются по порядку слоев (Global -> Dedicated -> Base). Если в одном из слое в ответе Handler сменит состояние (в ResponseContainer new_state будет не None), то следующие слои не будут вызваны.
-Это может быть удобно, так как можно переиспользовать логику обработчиков, допустим создать CancelHandler который если получает в сообщении "forward" отменяет обработку ввода и изменяет state (на предыдущий или другой), или таким способом можно сделать универсальный ограничитель длинные ввода, который не даст ввести более n символов.
+Во время обработки сообщения обработчики вызываются по порядку слоев (Global -> Base).Если обработчик изменяет state (в ResponseContainer new_state будет не None), то следующие слои не будут вызваны.
+Это позволяет переиспользовать логику обработчиков, допустим создать CancelHandler который если получает в сообщении "forward" отменяет обработку ввода и изменяет state (на предыдущий или другой), или таким способом можно сделать универсальный ограничитель длины ввода, который не даст ввести более n символов.
 
 ## Мини гайд/пример
 
@@ -112,22 +111,52 @@ class EchoHandler(Handler):
 async def build_echo_handler() -> EchoHandler: # фабрика обработчика
     return EchoHandler()
 
-# Также фабрика может использовать yield (как async context manager, но без декоратора), оны будет закрыта, когда Handler перестанет использоваться (удобно для session и connection, которые нужно закрывать).
+class WordsLimiterHandler(Handler):
+    def __init__(self, max_words: int, current_state: States):
+        self.max_words = max_words
+        self.current_state = current_state
+
+    async def handle(self, message: Message) -> ResponseContainer:
+        count = len(message.text.split())
+        if count > self.max_words:
+            return ResponseContainer(
+                ResponseMessage.from_message(message),
+                [TextResponse(f"Over {self.max_words} words not support!")],
+                new_state=self.current_state)
+        return ResponseContainer(ResponseMessage.from_message(message), None)
+
+
+def gen_word_limiter_handler(max_words: int, current_state: States) -> HandlerFactory: # получение фабрики с заготовленными параметрами
+    async def build_word_limiter_handler() -> WordsLimiterHandler:
+        return WordsLimiterHandler(max_words=max_words, current_state=current_state)
+    return build_word_limiter_handler
+
+# Также фабрика может использовать yield (как async context manager, но без декоратора), она будет закрыта, когда Handler перестанет использоваться (удобно для session и connection, которые нужно закрывать).
 ```
 
-В states.py создайте, что-то похожее на -
+В states.py опишите ваши состояния, это может выглядеть так -
 
 ```python
 class MyStates(States):
     START = "start"
+    MAIN = "main"
 ```
 
 далее зарегистрируйте это в settings/main.py
 
 ```python
 MESSAGE_HANDLERS = Setting[dict[tuple[Layers, States], HandlerFactory]]({
-    (Layers.BASE, MyStates.START): gen_echo_handler,
+    (Layers.BASE, MyStates.MAIN): build_echo_handler,
+    (Layers.GLOBAL, MyStates.MAIN): gen_word_limiter_handler(8, MyStates.MAIN)
 })
 ```
 
+Задайте базовое состояние
+
+```python
+DEFAULT_STATE = Setting(MyStates.MAIN)
+```
+
 в консоли перейдите в папку проекта `path/<bot_name>` и запусти main.py в src `python src/main.py` или `python -m src.main`, после этого бот будет запущен.
+
+Бот будет повторять ваши сообщения длинной не более 8 слов.
