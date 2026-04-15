@@ -6,6 +6,10 @@ from ..bot_orchestration.orchestration.main_orchestration import orchestration, 
 # Run Bot
 # ------------------------------
 
+"""
+To run change directory (cd) to bot dir and use `python src/main.py` or `python -m src.main`
+"""
+
 
 async def main():
     bot_package = await orchestration()
