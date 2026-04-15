@@ -1,11 +1,11 @@
 import asyncio
 from asyncio import Queue
+import traceback
 
 from unibot.errors.handle_build_error import HandleBuildError
 from unibot.response.response_container import ResponseContainer
 from unibot.rout.concurrency_limiter import ConcurrencyLimiter
 
-from unibot.types.command_handler_factory import CommandHandlerFactory
 from unibot.handler.command_handler import CommandHandler
 from unibot.commands.command import Command
 from unibot.rout.commands.handler_command_register import HandlerCommandRegister
@@ -13,6 +13,7 @@ from unibot.response.response_processor import ResponseProcessor
 from unibot.handler.handler_builder import HandlerBuilder
 
 from unibot.logger.logger import logger
+from unibot.types.command_handler_factory import CommandHandlerFactory
 
 
 class CommandRouter:
@@ -26,7 +27,7 @@ class CommandRouter:
 
         self.tasks_queue: Queue[Command] = Queue()
         self.semaphore = concurrency_limiter.semaphore
-        self.max_task = concurrency_limiter.max_tasks
+        self.max_tasks = concurrency_limiter.max_tasks
 
         self._is_working = True
         self.async_worker_task = None
@@ -54,24 +55,24 @@ class CommandRouter:
 
     async def _worker_loop(self):
         while self._is_working:
-            async with self.semaphore:
-                message = await self.tasks_queue.get()
-                try:
-                    await self._process(message)
-                finally:
-                    self.tasks_queue.task_done()
+            message = await self.tasks_queue.get()
+            try:
+                await self._process(message)
+            finally:
+                self.tasks_queue.task_done()
 
     async def _process(self, command: Command):
-        handler_factory = await self.handler_command_register.get(command.command)
-        if handler_factory is None:
-            return
+        async with self.semaphore:
+            handler_factory = await self.handler_command_register.get(command.command)
+            if handler_factory is None:
+                return
 
-        resp = await self._process_handler(handler_factory, command)
-        if resp is not None:
-            await self.response_processor.process(resp)
+            resp = await self._process_handler(handler_factory, command)
+            if resp is not None:
+                await self.response_processor.process(resp)
 
-        logger().info(
-            f"Successfully handle command {command.command.name} id:{command.message_id} in chat:{command.chat_id} from user:{command.user_id}")
+            logger().info(
+                f"Successfully handle command {command.command.name} id:{command.message_id} in chat:{command.chat_id} from user:{command.user_id}")
 
     async def _process_handler(self, handler_factory: CommandHandlerFactory, command: Command) -> ResponseContainer | None:
         try:
@@ -80,10 +81,12 @@ class CommandRouter:
                     return await handler.handle(command)
                 except Exception as e:
                     logger().error(
-                        f"error while processing handler {handler_factory} "
-                        f"command={command.command} id={command.message_id} user_id={command.user_id} - {e}"
+                        f"error while processing handler {handler} "
+                        f"command={command.command} id={command.message_id} user_id={command.user_id} - {e} {e.__traceback__}"
                     )
+                    traceback.print_exc()
                     return None
         except HandleBuildError as e:
-            logger().error(f"error while build {handler_factory} - {e}")
+            logger().error(
+                f"error while build {handler_factory} - {e} {e.__traceback__}")
             return None

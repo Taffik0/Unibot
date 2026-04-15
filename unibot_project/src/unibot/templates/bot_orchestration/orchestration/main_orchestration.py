@@ -1,4 +1,4 @@
-from ..settings.main import OPERATING_MOD, MAX_TASKS, DEFAULT_STATE, MESSAGE_HANDLERS, COMMAND_HANDLERS, COMMANDS
+from ..settings.main import OPERATING_MODE, MAX_TASKS, DEFAULT_STATE, MESSAGE_HANDLERS, COMMAND_HANDLERS, COMMANDS
 
 from .infrastructure_orchestration import sender_orchestration, listener_orchestration
 
@@ -26,7 +26,7 @@ from unibot.types.handler_layers import Layers
 
 
 async def orchestration() -> BotPackage:
-    operating_mod = str(OPERATING_MOD.value())
+    operating_mod = str(OPERATING_MODE.value())
     concurrency_limiter = ConcurrencyLimiter(int(MAX_TASKS.value()))
 
     sender = await sender_orchestration(operating_mod)
@@ -42,21 +42,18 @@ async def orchestration() -> BotPackage:
     # message
     handler_state_register = HandlerStateRegister()
     handler_builder = HandlerBuilder(bot_tools)
-    handler_orchestrator = HandlerOrchestrator(
-        handler_builder, response_processor)
     message_router = MessageRouter(handler_state_register=handler_state_register,
-                                   handler_orchestrator=handler_orchestrator,
                                    conversation_state_repository=conversation_state_repository,
-                                   concurrency_limiter=concurrency_limiter)
+                                   concurrency_limiter=concurrency_limiter,
+                                   handler_builder=handler_builder,
+                                   response_processor=response_processor)
 
     # command
     handler_command_register = HandlerCommandRegister()
-    command_handler_builder = CommandHandlerBuilder(bot_tools)
-    command_handler_orchestrator = CommandHandlerOrchestration(
-        command_handler_builder, response_processor)
     command_router = CommandRouter(handler_command_register=handler_command_register,
-                                   command_handler_orchestrator=command_handler_orchestrator,
-                                   concurrency_limiter=concurrency_limiter)
+                                   concurrency_limiter=concurrency_limiter,
+                                   handler_builder=handler_builder,
+                                   response_processor=response_processor)
 
     listener = await listener_orchestration(operating_mod, message_router, command_router)
 
@@ -65,7 +62,6 @@ async def orchestration() -> BotPackage:
                              handler_builder=handler_builder,
                              command_router=command_router,
                              handler_command_register=handler_command_register,
-                             command_handler_builder=command_handler_builder,
                              conversation_state_repository=conversation_state_repository,
                              response_processor=response_processor,
                              bot_tools=bot_tools,

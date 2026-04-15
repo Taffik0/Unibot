@@ -46,3 +46,5 @@ dist/
 *.bak
 *.swp
 *.DS_Store  # для macOS
+
+example/

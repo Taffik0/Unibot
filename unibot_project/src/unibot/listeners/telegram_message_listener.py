@@ -11,6 +11,7 @@ from unibot.message_adapters.incoming.commands.telegram_incoming_command_adapter
 
 from unibot.rout.message_router import MessageRouter
 from unibot.rout.commands.command_router import CommandRouter
+from unibot.logger.logger import logger
 
 
 class AnyCommand(BaseFilter):

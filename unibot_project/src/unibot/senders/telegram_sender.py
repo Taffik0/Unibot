@@ -12,6 +12,8 @@ class TelegramSender(Sender):
     async def send(self, response_container: ResponseContainer):
         text = ""
         chat_id = int(response_container.message.chat_id)
+        if response_container.responses is None:
+            return
         for resp in response_container.responses:
             if isinstance(resp, TextResponse):
                 text += resp.text

@@ -29,7 +29,6 @@ class BotPackage:
 
     command_router: CommandRouter
     handler_command_register: HandlerCommandRegister
-    command_handler_builder: CommandHandlerBuilder
 
     conversation_state_repository: ConversationStateRepository
     response_processor: ResponseProcessor

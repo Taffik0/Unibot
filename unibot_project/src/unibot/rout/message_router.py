@@ -58,30 +58,30 @@ class MessageRouter:
 
     async def _worker_loop(self):
         while self._is_working:
-            async with self.semaphore:
-                message = await self.tasks_queue.get()
-                try:
-                    await self._process(message)
-                finally:
-                    self.tasks_queue.task_done()
+            message = await self.tasks_queue.get()
+            try:
+                await self._process(message)
+            finally:
+                self.tasks_queue.task_done()
 
     async def _process(self, message: Message):
-        state = await self.conversation_state_repository.get_state(message.user_id)
-        layers = [
-            self.handler_state_register.get_global,
-            self.handler_state_register.get_dedicated,
-            self.handler_state_register.get,]
+        async with self.semaphore:
+            state = await self.conversation_state_repository.get_state(message.user_id)
+            layers = [
+                self.handler_state_register.get_global,
+                self.handler_state_register.get_dedicated,
+                self.handler_state_register.get,]
 
-        for layer in layers:
-            handler_factory = await layer(state)
-            if handler_factory is not None:
-                resp = await self._process_handler(handler_factory, message)
-                if resp is not None:
-                    await self._process_response(resp)
-                    if resp.new_state is not None:
-                        return
-        logger().info(
-            f"Successfully handle message id:{message.id} in chat:{message.chat_id} from user:{message.user_id}")
+            for layer in layers:
+                handler_factory = await layer(state)
+                if handler_factory is not None:
+                    resp = await self._process_handler(handler_factory, message)
+                    if resp is not None:
+                        await self._process_response(resp)
+                        if resp.new_state is not None:
+                            return
+            logger().info(
+                f"Successfully handle message id:{message.id} in chat:{message.chat_id} from user:{message.user_id}")
 
     async def _process_handler(self, handler_factory, message) -> ResponseContainer | None:
         try:

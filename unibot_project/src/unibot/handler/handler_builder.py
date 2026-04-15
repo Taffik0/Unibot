@@ -1,14 +1,13 @@
-from typing import Any, AsyncGenerator, AsyncIterator
+from typing import Any, AsyncGenerator, AsyncIterator, TYPE_CHECKING
 from dataclasses import dataclass
 import inspect
-
-from unibot.types.handler_factory import HandlerFactory
-from unibot.types.command_handler_factory import CommandHandlerFactory
 
 from unibot.errors.handle_build_error import HandleBuildError
 
 from unibot.handler.handler import Handler
 from unibot.handler.command_handler import CommandHandler
+from unibot.types.handler_factory import HandlerFactory
+from unibot.types.command_handler_factory import CommandHandlerFactory
 
 from unibot.tools.bot_tools import BotTools
 
@@ -50,7 +49,7 @@ class HandlerBuilder:
         return args
 
     @asynccontextmanager
-    async def use_handler(self, handler_factory: HandlerFactory) -> AsyncIterator[Handler]:
+    async def use_handler(self, handler_factory: HandlerFactory) -> AsyncIterator["Handler"]:
         build_handler = await self.build(handler_factory)
         try:
             yield build_handler.handler
@@ -58,7 +57,7 @@ class HandlerBuilder:
             await self.clear(builded_handler=build_handler)
 
     @asynccontextmanager
-    async def use_command_handler(self, handler_factory: CommandHandlerFactory) -> AsyncIterator[CommandHandler]:
+    async def use_command_handler(self, handler_factory: CommandHandlerFactory) -> AsyncIterator["CommandHandler"]:
         build_handler = await self.build(handler_factory)
         try:
             yield build_handler.handler

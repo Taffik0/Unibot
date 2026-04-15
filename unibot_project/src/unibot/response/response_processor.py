@@ -10,6 +10,11 @@ class ResponseProcessor:
         self.conversation_state_repository = conversation_state_repository
 
     async def process(self, response_container: ResponseContainer):
-        if response_container.new_state is not None:
-            await self.conversation_state_repository.set_state(response_container.message.user_id, response_container.new_state)
-        await self.sender.send(response_container)
+        try:
+            if response_container.new_state is not None:
+                await self.conversation_state_repository.set_state(response_container.message.user_id, response_container.new_state)
+            if response_container.responses is None:
+                return
+            await self.sender.send(response_container)
+        except Exception as e:
+            print(e)

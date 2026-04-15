@@ -7,5 +7,5 @@ from unibot.response.response_message import ResponseMessage
 @dataclass
 class ResponseContainer:
     message: ResponseMessage
-    responses: list[Response]
+    responses: list[Response] | None
     new_state: None | States = None
