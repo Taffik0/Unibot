@@ -53,6 +53,9 @@ class TelegramMessageListener(MessageListener):
 
     async def _listening_message(self, message: TgMessage):
         clear_message = self.incoming_message_adapter.adapt_message(message)
+        if clear_message is None:
+            return
+        await self.incoming_message_adapter.add_picture(clear_message, message, self.bot)
         await self.message_router.rout(clear_message)
 
     async def _listening_commands(self, message: TgMessage):
