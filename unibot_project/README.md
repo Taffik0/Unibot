@@ -165,3 +165,23 @@ DEFAULT_STATE = Setting(MyStates.MAIN)
 в консоли перейдите в папку проекта `path/<bot_name>` и запусти main.py в src `python src/main.py` или `python -m src.main`, после этого бот будет запущен.
 
 Бот будет повторять ваши сообщения длинной не более 8 слов.
+
+## Messengers Support
+
+### Telegram
+
+install unibot[telegram] - `pip install unibot[telegram]`
+
+SpecificData support
+
+| name       | status | des                       |
+| ---------- | :----: | ------------------------- |
+| PicturePC  |   ✅   |                           |
+| FullNamePC |   ⚠️   | middle_name всегда пустой |
+
+Response support
+
+| name                 | status | des                              |
+| -------------------- | :----: | -------------------------------- |
+| PictureResponse      |   ✅   |                                  |
+| PictureGroupResponse |   ⚠️   | отображается только 1'ый caption |
