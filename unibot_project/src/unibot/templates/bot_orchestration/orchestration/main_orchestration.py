@@ -101,9 +101,9 @@ async def _register_message_handlers(bot: BotPackage):
         if layer == Layers.BASE:
             bot.handler_state_register.register(
                 state=state, factory=message_handlers[key])
-        if layer == Layers.DEDICATED:
-            bot.handler_state_register.register_dedicated(
-                state=state, factory=message_handlers[key])
+        # if layer == Layers.DEDICATED:
+        #    bot.handler_state_register.register_dedicated(
+        #        state=state, factory=message_handlers[key])
         if layer == Layers.GLOBAL:
             bot.handler_state_register.register_global(
                 state=state, factory=message_handlers[key])

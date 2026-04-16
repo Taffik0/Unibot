@@ -16,6 +16,7 @@ class TelegramIncomingMessageAdapter(IncomingMessageAdapter):
             raise
         user_id = str(raw_message.from_user.id)
         text = raw_message.text if raw_message.text is not None else ""
+        text += raw_message.caption if raw_message.caption is not None else ""
         clean_message = Message(str(raw_message.message_id), user_id, str(
             raw_message.chat.id), text, dt)
 
