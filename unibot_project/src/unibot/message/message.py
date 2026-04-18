@@ -1,8 +1,12 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from collections import defaultdict
+from typing import TypeVar, Type, cast
 
 from unibot.message.specific_data import SpecificData
+
+
+T = TypeVar("T", bound=SpecificData)
 
 
 @dataclass
@@ -30,5 +34,8 @@ class Message:
         self.specific_data.append(item)
         self._index[type(item)].append(item)
 
-    def get_sd(self, cls: type[SpecificData]) -> list[SpecificData]:
-        return self._index.get(cls, [])
+    def get_sd(self, cls: Type[T]) -> list[T]:
+        return cast(list[T], self._index.get(cls, []))
+
+    def has_sd(self, cls: Type[T]) -> bool:
+        return bool(self._index.get(cls, []))

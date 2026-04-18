@@ -13,6 +13,7 @@ dependencies = []
 
 [project.optional-dependencies]
 telegram = ["aiogram"]
+vk = ["aiovk"]
 
 [tool.setuptools.package-data]
 "unibot" = ["py.typed"]
