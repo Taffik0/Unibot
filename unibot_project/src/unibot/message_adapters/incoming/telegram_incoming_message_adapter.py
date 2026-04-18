@@ -5,7 +5,7 @@ from unibot.message_adapters.incoming.incoming_message_adapter import IncomingMe
 from aiogram.types import Message as TgMessage
 from aiogram import Bot
 from unibot.message.message import Message
-from unibot.message.specific_data import FullNameSD, Picture, PictureSD
+from unibot.message.specific_data import FullNameSD, Picture, PictureSD, DocumentSD
 
 
 class TelegramIncomingMessageAdapter(IncomingMessageAdapter):
@@ -43,6 +43,20 @@ class TelegramIncomingMessageAdapter(IncomingMessageAdapter):
                 pictures.append(Picture(photo.width, photo.height,
                                 self._gen_download_file(file_path, bot)))
         message.add_sd(PictureSD(pictures))
+
+    async def add_document(self, message: Message, raw_message: TgMessage, bot: Bot):
+        document = raw_message.document
+        if document is None:
+            return
+        file = await bot.get_file(document.file_id)
+        if file.file_path is None:
+            return
+        file_name = document.file_name if document.file_name else ""
+        file_size = file.file_size if file.file_size else -1
+        file_type = document.mime_type if document.mime_type else ""
+        doc_sd = DocumentSD(file_name, file_size, file_type,
+                            self._gen_download_file(file.file_path, bot))
+        message.add_sd(doc_sd)
 
     @staticmethod
     def _gen_download_file(file_path: str, bot: Bot):

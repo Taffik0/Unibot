@@ -45,6 +45,22 @@ class PictureSD(SpecificData):
 
 
 @dataclass
+class DocumentSD(SpecificData):
+    file_name: str
+    file_size: int
+    file_type: str
+
+    _download_func: Callable[[], Awaitable[bytes | None]] = field(
+        repr=False, compare=False)
+
+    async def download(self) -> bytes | None:
+        return await self._download_func()
+
+    def __post_init__(self):
+        self.sd_type = "document"
+
+
+@dataclass
 class VKSD(SpecificData):
     random_id: int
     is_community: bool
