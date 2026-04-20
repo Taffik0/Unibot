@@ -1,4 +1,5 @@
-from ..settings.main import OPERATING_MODE, MAX_TASKS, DEFAULT_STATE, MESSAGE_HANDLERS, COMMAND_HANDLERS, COMMANDS
+from ..settings.main import OPERATING_MODE, MAX_TASKS, DEFAULT_STATE, COMMAND_HANDLERS, COMMANDS
+from ..settings.main import GLOBAL_HANDLERS, DEDICATED_HANDLERS, BASE_HANDLERS
 
 from .infrastructure_orchestration import sender_orchestration, listener_orchestration
 
@@ -94,19 +95,18 @@ async def register(bot: BotPackage):
 
 
 async def _register_message_handlers(bot: BotPackage):
-    global MESSAGE_HANDLERS
-    message_handlers = MESSAGE_HANDLERS.value()
-    for key in message_handlers:
-        layer, state = key
-        if layer == Layers.BASE:
-            bot.handler_state_register.register(
-                state=state, factory=message_handlers[key])
-        # if layer == Layers.DEDICATED:
-        #    bot.handler_state_register.register_dedicated(
-        #        state=state, factory=message_handlers[key])
-        if layer == Layers.GLOBAL:
-            bot.handler_state_register.register_global(
-                state=state, factory=message_handlers[key])
+    global GLOBAL_HANDLERS, DEDICATED_HANDLERS, BASE_HANDLERS
+    global_handlers = GLOBAL_HANDLERS.value()
+    for state in global_handlers.keys():
+        bot.handler_state_register.register_global(
+            state, global_handlers[state])
+    dedicated_handlers = DEDICATED_HANDLERS.value()
+    for state in dedicated_handlers.keys():
+        bot.handler_state_register.register_global(
+            state, dedicated_handlers[state])
+    handlers = BASE_HANDLERS.value()
+    for state in handlers.keys():
+        bot.handler_state_register.register_global(state, handlers[state])
 
 
 async def _register_command_handlers(bot: BotPackage):

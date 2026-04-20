@@ -1,6 +1,6 @@
 import asyncio
 
-from ..bot_orchestration.orchestration.main_orchestration import orchestration, start, stop, register
+from bot_orchestration.orchestration.main_orchestration import orchestration, start, stop, register
 
 # ------------------------------
 # Run Bot

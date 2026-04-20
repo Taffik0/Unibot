@@ -67,13 +67,21 @@ class MessageRouter:
     async def _process(self, message: Message):
         async with self.semaphore:
             state = await self.conversation_state_repository.get_state(message.user_id)
-            layers = [
-                self.handler_state_register.get_global,
-                self.handler_state_register.get_dedicated,
-                self.handler_state_register.get,]
+            handlers: list = []
+            # get from global layer
+            global_handlers = await self.handler_state_register.get_global(state)
+            if global_handlers:
+                handlers.append(*global_handlers)
+            # get from dedicated layer
+            dedicated_handlers = await self.handler_state_register.get_dedicated(state)
+            if dedicated_handlers:
+                handlers.append(*dedicated_handlers)
+            # get from base layer (max one handler always)
+            base_handler = await self.handler_state_register.get(state)
+            if base_handler is not None:
+                handlers.append(base_handler)
 
-            for layer in layers:
-                handler_factory = await layer(state)
+            for handler_factory in handlers:
                 if handler_factory is not None:
                     resp = await self._process_handler(handler_factory, message)
                     if resp is not None:

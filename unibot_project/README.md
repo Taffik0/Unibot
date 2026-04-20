@@ -16,7 +16,7 @@ UniBot - библиотека для создания ботов, которая
 - Удобные и простые функции-фабрики Handler'ов (обработчиков событий)
 - Асинхронный код
 
-## Структура проекты
+## Структура проекта
 
 ```path
 my_project
@@ -34,15 +34,11 @@ my_project
       └─ ...
 ```
 
-В **src** находиться основной код: ваши handlers, состояния, команды, если есть сервисы, репозитории и т.п.
+В **src** находится основной код: ваши handlers, состояния, команды, если есть сервисы, репозитории и т.п.
 
 В bot_orchestration в основном интересна - **settings**, тут настройки вашего бота, какой режим работы (telegram, vk и т.п.), максимальное количество task, какие есть handler, команды, и т.п.
 
-В **bot_orchestration/orchestration** находиться методы оркестрации, **вам не стоит тут что-то менять**, если вы не тестируете свои listeners и senders.
-
-## Состояние разработки
-
-На данный момент минимально поддерживается telegram, но большинство функций не реализовано (получение отправка файлов, изображений и т.п., не возможна работа с кнопками).
+**bot_orchestration/orchestration** - это low-level слой для добавления новых платформ. При изменение можно сломать работу бота.
 
 ## State / Handler / Layers
 
@@ -52,12 +48,16 @@ my_project
 
 существуют 2 слоя:
 
-1. Global - ограничения, валидация, cancel
-2. Base - основной обработчик
+1. Global - то что должно выполниться в любом случае, как переход при вводе cancel.
+2. Dedicated - ограничения, валидация, фильтрация
+3. Base - основной обработчик
 
-Важно: На одном слое может быть только один обработчик на состояние.
-Во время обработки сообщения обработчики вызываются по порядку слоев (Global -> Base).Если обработчик изменяет state (в ResponseContainer new_state будет не None), то следующие слои не будут вызваны.
-Это позволяет переиспользовать логику обработчиков, допустим создать CancelHandler который если получает в сообщении "forward" отменяет обработку ввода и изменяет state (на предыдущий или другой), или таким способом можно сделать универсальный ограничитель длины ввода, который не даст ввести более n символов.
+Важно - в слое Base может быть только один обработчик на состояние!
+В Global и Dedicated на одно состояние может быть несколько обработчиков.
+
+Слои будут вызываться в строгом порядке сверху вниз Global -> Dedicated -> Base, если один из обработчиков сменит состояние (new_state в return не None), то следующие обработчики не вызовутся.
+
+Не стоит рассчитывать на порядок выполнения в одном слое (Global, Dedicated),лучше делать их не зависимыми от порядка - это делает архитектуру более чистой, надежной и модульной. В Global, Dedicated не стоит мутировать систему (за исключением state), так как это будет размазывать основную логику по множеству обработчиков и это будет сложно тестировать.
 
 ## Про Specific Data (SD)
 
@@ -72,7 +72,7 @@ my_project
 Зайдите в настройки `<bot_name>/bot_orchestration/settings` в main.py вы увидите, что-то подобное:
 
 ```python
-OPERATING_MODE = EmptySetting("OPERATING_MOD not specified (in main settings)")
+OPERATING_MODE = EmptySetting("OPERATING_MODE not specified (in main settings)")
 
 MAX_TASKS: Setting[int] = Setting(50)
 
@@ -83,9 +83,21 @@ COMMANDS = Setting[list[Commands]]([
     # MyCommands
 ])
 
-MESSAGE_HANDLERS = Setting[dict[tuple[Layers, States], HandlerFactory]]({
+GLOBAL_HANDLERS = Setting[dict[States, list[HandlerFactory] | HandlerFactory]]({
     # example
-    # (Layers.BASE, MyStates.START): build_echo_handler
+    # MyStates.WRITE : build_cancel_handler
+})
+
+# Handlers in Dedicated Layer
+DEDICATED_HANDLERS = Setting[dict[States, list[HandlerFactory] | HandlerFactory]]({
+    # example
+    # MyStates.WRITE : build_length_limiter_handler
+})
+
+# Handler in Base layer (max one for state)
+BASE_HANDLERS = Setting[dict[States, HandlerFactory]]({
+    # example
+    # MyStates.WRITE : build_echo_handler
 })
 
 COMMAND_HANDLERS = Setting[dict[Commands, CommandHandlerFactory]]({
@@ -98,7 +110,9 @@ COMMAND_HANDLERS = Setting[dict[Commands, CommandHandlerFactory]]({
 OPERATING_MODE - мессенджер для которого бот (сейчас есть telegram)
 DEFAULT_STATE - базовое состояние пользователя, при первом сообщении (например START), ждет ваш кастомный класс от State.
 COMMANDS - команды которые ждет бот
-MESSAGE_HANDLERS - обработчики сообщений
+GLOBAL_HANDLERS - обработчики в Global layer
+DEDICATED_HANDLERS - обработчики в Dedicated layer
+BASE_HANDLERS - обработчики в Base layer
 COMMAND_HANDLERS - обработчики команд
 
 Зайдите в src `<bot_name>/src` в handler message/command вы можете создавать своих обработчиков наследуя их соответственно от Handler/CommandHandler (из `unibot.handler`)
@@ -139,6 +153,8 @@ def gen_word_limiter_handler(max_words: int, current_state: States) -> HandlerFa
 # Также фабрика может использовать yield (как async context manager, но без декоратора), она будет закрыта, когда Handler перестанет использоваться (удобно для session и connection, которые нужно закрывать).
 ```
 
+Вве фабрики - async для единобрачия API, sync io затормозит процесс обработки.
+
 В states.py опишите ваши состояния, это может выглядеть так -
 
 ```python
@@ -150,9 +166,14 @@ class MyStates(States):
 далее зарегистрируйте это в settings/main.py
 
 ```python
-MESSAGE_HANDLERS = Setting[dict[tuple[Layers, States], HandlerFactory]]({
-    (Layers.BASE, MyStates.MAIN): build_echo_handler,
-    (Layers.GLOBAL, MyStates.MAIN): gen_word_limiter_handler(8, MyStates.MAIN)
+# Handlers in Dedicated Layer
+DEDICATED_HANDLERS = Setting[dict[States, list[HandlerFactory] | HandlerFactory]]({
+    MyStates.MAIN: gen_word_limiter_handler(5, MyStates.MAIN)
+})
+
+# Handler in Base layer (max one for state)
+BASE_HANDLERS = Setting[dict[States, HandlerFactory]]({
+    MyStates.MAIN: build_echo_handler
 })
 ```
 
@@ -165,6 +186,10 @@ DEFAULT_STATE = Setting(MyStates.MAIN)
 в консоли перейдите в папку проекта `path/<bot_name>` и запусти main.py в src `python src/main.py` или `python -m src.main`, после этого бот будет запущен.
 
 Бот будет повторять ваши сообщения длинной не более 8 слов.
+
+## Состояние разработки
+
+На данный момент минимально поддерживается telegram, но большинство функций не реализовано (получение отправка файлов, изображений и т.п., не возможна работа с кнопками).
 
 ## Messengers Support
 

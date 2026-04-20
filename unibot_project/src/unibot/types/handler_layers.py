@@ -3,5 +3,5 @@ from enum import Enum
 
 class Layers(Enum):
     BASE = "base"
-    # DEDICATED = "dedicated"
+    DEDICATED = "dedicated"
     GLOBAL = "global"
