@@ -66,7 +66,7 @@ my_project
 
 ## Мини гайд/пример
 
-Установите библиотеку `pip install git+<ссылка на github, пока нет>`
+Установите библиотеку `pip install git+https://github.com/Taffik0/Unibot.git`
 Создайте проект `python -m unibot.scripts.create_project echo_bot` или укажите `.`, что бы создать в текущей директории.
 
 Зайдите в настройки `<bot_name>/bot_orchestration/settings` в main.py вы увидите, что-то подобное:
