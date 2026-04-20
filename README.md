@@ -201,8 +201,8 @@ SpecificData support
 
 | name       | status | des                       |
 | ---------- | :----: | ------------------------- |
-| PicturePC  |   ✅   |                           |
-| FullNamePC |   ⚠️   | middle_name всегда пустой |
+| PictureSD  |   ✅   |                           |
+| FullNameSD |   ⚠️   | middle_name всегда пустой |
 
 Response support
 
