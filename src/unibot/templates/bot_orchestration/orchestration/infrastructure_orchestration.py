@@ -16,12 +16,14 @@ from unibot.message_adapters.incoming.commands.incoming_command_adapter import I
 from unibot.message_adapters.incoming.commands.telegram_incoming_command_adapter import TelegramIncomingCommandAdapter
 
 from .infrastructure.telegram import sender_orchestration as tg_sender_orchestration, listener_orchestration as tg_listener_orchestration
+from .infrastructure.vk import sender_orchestration as vk_sender_orchestration, listener_orchestration as vk_listener_orchestration
 
 
 async def sender_orchestration(operating_mode: str) -> Sender:
     if operating_mode == "telegram":
         return await tg_sender_orchestration()
-
+    if operating_mode == "vk":
+        return await vk_sender_orchestration()
     raise
 
 
@@ -32,5 +34,6 @@ async def listener_orchestration(
 
     if operating_mode == "telegram":
         return await tg_listener_orchestration(COMMANDS.value(), message_router, command_router)
-
+    if operating_mode == "vk":
+        return await vk_listener_orchestration(COMMANDS.value(), message_router, command_router)
     raise

@@ -8,9 +8,9 @@ from unibot.message.specific_data import VKSD
 class VKIncomingMessageAdapter(IncomingMessageAdapter):
     def adapt_message(self, raw_message) -> Message:
         dt = datetime.fromtimestamp(raw_message["date"])
-        id = raw_message["id"]
-        user_id = abs(raw_message["from_id"])
-        chat_id = raw_message["peer_id"]
+        id = str(raw_message["id"])
+        user_id = str(abs(raw_message["from_id"]))
+        chat_id = str(raw_message["peer_id"])
         text = raw_message["text"]
         random_id = raw_message["random_id"]
         vksd = VKSD(random_id=random_id,

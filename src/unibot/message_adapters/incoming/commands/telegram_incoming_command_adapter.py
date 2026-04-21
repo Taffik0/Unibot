@@ -21,7 +21,7 @@ class TelegramIncomingCommandAdapter(IncomingCommandAdapter):
             try:
                 return ce(command)
             except Exception as e:
-                print(f"can validate command {e}")
+                pass
         return None
 
     def adapt_command(self, raw_command: tuple[CommandObject, TgMessage]) -> Command | None:

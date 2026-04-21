@@ -1,5 +1,8 @@
 # UniBot - universal messenger bot python library
 
+- English: [README.en.md](README.en.md)
+- Русский: [README.ru.md](README.ru.md)
+
 ⚠️ Проект находиться в начальной стадии разработки, реализация очень сыра и недоработана(и почти ничего не умеет). Если у вас возникнут ошибки и трудности, будем очень рады обратной связи ^-^
 
 UniBot - библиотека для создания ботов, которая унифицирует работу с API разных мессенджеров и упрощает работу с большими проектами.
@@ -208,5 +211,20 @@ Response support
 
 | name                 | status | des                              |
 | -------------------- | :----: | -------------------------------- |
+| TextResponse         |   ✅   |                                  |
 | PictureResponse      |   ✅   |                                  |
 | PictureGroupResponse |   ⚠️   | отображается только 1'ый caption |
+
+### VK
+
+SpecificData support
+
+| name | status | des                   |
+| ---- | :----: | --------------------- |
+| VKSD |   ⚠️   | специфичные данные vk |
+
+Response support
+
+| name         | status | des |
+| ------------ | :----: | --- |
+| TextResponse |   ✅   |     |

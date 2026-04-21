@@ -80,7 +80,6 @@ class MessageRouter:
             base_handler = await self.handler_state_register.get(state)
             if base_handler is not None:
                 handlers.append(base_handler)
-
             for handler_factory in handlers:
                 if handler_factory is not None:
                     resp = await self._process_handler(handler_factory, message)

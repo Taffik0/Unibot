@@ -102,11 +102,11 @@ async def _register_message_handlers(bot: BotPackage):
             state, global_handlers[state])
     dedicated_handlers = DEDICATED_HANDLERS.value()
     for state in dedicated_handlers.keys():
-        bot.handler_state_register.register_global(
+        bot.handler_state_register.register_dedicated(
             state, dedicated_handlers[state])
     handlers = BASE_HANDLERS.value()
     for state in handlers.keys():
-        bot.handler_state_register.register_global(state, handlers[state])
+        bot.handler_state_register.register(state, handlers[state])
 
 
 async def _register_command_handlers(bot: BotPackage):
