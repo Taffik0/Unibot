@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "unibot"
-version = "0.0.1"
+version = "0.0.2a1"
 description = "universal bot framework"
 authors = [{ name = "Taffik" }]
 readme = "README.md"

@@ -200,14 +200,14 @@ DEFAULT_STATE = Setting(MyStates.MAIN)
 
 install unibot[telegram] - `pip install unibot[telegram]`
 
-SpecificData support
+SpecificData support:
 
 | name       | status | des                       |
 | ---------- | :----: | ------------------------- |
 | PictureSD  |   ✅   |                           |
 | FullNameSD |   ⚠️   | middle_name всегда пустой |
 
-Response support
+Response support:
 
 | name                 | status | des                              |
 | -------------------- | :----: | -------------------------------- |
@@ -217,13 +217,13 @@ Response support
 
 ### VK
 
-SpecificData support
+SpecificData support:
 
 | name | status | des                   |
 | ---- | :----: | --------------------- |
 | VKSD |   ⚠️   | специфичные данные vk |
 
-Response support
+Response support:
 
 | name         | status | des |
 | ------------ | :----: | --- |
